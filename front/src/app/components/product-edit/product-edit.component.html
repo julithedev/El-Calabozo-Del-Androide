@@ -1,0 +1,333 @@
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" routerLink="/">
+      <i class="fas fa-shopping-bag me-2"></i>El Calabozo Del Androide
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/editar">Editar</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/carrito">Carrito</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container my-5">
+  <!-- Header -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">
+          <i class="fas fa-cogs me-2"></i>Administración de Productos
+        </h2>
+        <button
+          class="btn btn-success"
+          data-bs-toggle="modal"
+          data-bs-target="#addProductModal"
+        >
+          <i class="fas fa-plus me-2"></i>Agregar Producto
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-table me-2"></i>Lista de Productos
+          </h5>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Imagen</th>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">Descripción</th>
+                  <th scope="col">Precio</th>
+                  <th scope="col" class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let producto of productos" class="align-middle">
+                  <td class="fw-bold">{{ producto.id }}</td>
+                  <td class="text-center align-middle">
+                    <img
+                      [src]="producto.imageUrl"
+                      alt="{{ producto.producto }}"
+                      *ngIf="producto.imageUrl"
+                      class="product-thumbnail"
+                    />
+                  </td>
+                  <td>
+                    <div class="fw-bold">{{ producto.producto }}</div>
+                  </td>
+                  <td>
+                    <div class="description-cell">
+                      {{ producto.descripcion }}
+                    </div>
+                  </td>
+                  <td>
+                    <div class="price-cell">
+                      <span class="fw-bold text-success">
+                        {{ producto.precio | currency : "" }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="btn-group" role="group">
+                      <button
+                        type="button"
+                        class="btn btn-outline-danger btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteProductModal"
+                        (click)="confirmarEliminarProducto(producto)"
+                        title="Eliminar producto"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer text-muted">
+          Total de productos: {{ cantidadProductos() }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+          (click)="cancelarEliminacion()"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center">
+          <i class="fas fa-trash fa-3x text-danger mb-3"></i>
+          <h5>¿Estás seguro de que quieres eliminar este producto?</h5>
+          <p class="text-muted">
+            <strong>{{ productoAEliminar?.producto }}</strong
+            ><br />
+            Esta acción no se puede deshacer.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          (click)="cancelarEliminacion()"
+        >
+          <i class="fas fa-times me-2"></i>Cancelar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-danger" 
+          data-bs-dismiss="modal"
+          (click)="eliminarProducto()"
+        >
+          <i class="fas fa-trash me-2"></i>Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success text-white">
+        <h5 class="modal-title">
+          <i class="fas fa-plus me-2"></i>Agregar Nuevo Producto
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          id="addProductForm"
+          [formGroup]="productoForm"
+          (ngSubmit)="agregarProducto()"
+        >
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="newProductName" class="form-label"
+                  >Nombre del Producto</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="newProductName"
+                  formControlName="producto"
+                  required
+                />
+                <div>
+                  <span
+                    *ngIf="
+                      productoForm.get('producto')?.invalid &&
+                      productoForm.get('producto')?.touched
+                    "
+                    class="text-danger"
+                    >Campo producto es requerido</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="newProductPrice" class="form-label">Precio</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="newProductPrice"
+                    min="0"
+                    step="0.01"
+                    formControlName="precio"
+                    required
+                  />
+                  <div>
+                    <span
+                      *ngIf="
+                        productoForm.get('precio')?.invalid &&
+                        productoForm.get('precio')?.touched
+                      "
+                      class="text-danger"
+                      >Campo precio es requerido</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="newProductDescription" class="form-label"
+              >Descripción</label
+            >
+            <textarea
+              class="form-control"
+              id="newProductDescription"
+              rows="3"
+              formControlName="descripcion"
+              required
+            ></textarea>
+            <div>
+              <span
+                *ngIf="
+                  productoForm.get('descripcion')?.invalid &&
+                  productoForm.get('descripcion')?.touched
+                "
+                class="text-danger"
+                >Campo descripcion es requerido</span
+              >
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="newProductImage" class="form-label"
+              >URL de la Imagen</label
+            >
+            <input
+              type="url"
+              class="form-control"
+              id="newProductImage"
+              formControlName="imageUrl"
+              rows="3"
+            />
+            <div>
+              <span
+                *ngIf="
+                  productoForm.get('descripcion')?.invalid &&
+                  productoForm.get('descripcion')?.touched
+                "
+                class="text-danger"
+                >Campo url de imagen es requerido</span
+              >
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="reset" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-2"></i>Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-success"
+          data-bs-dismiss="modal"
+          (click)="agregarProducto()"
+        >
+          <i class="fas fa-plus me-2"></i>Agregar Producto
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-5 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h5 class="fw-bold mb-3">
+          <i class="fas fa-shopping-bag me-2"></i>El Calabozo Del Androide
+        </h5>
+        <p>
+          Tu tienda de tecnología de confianza. Los mejores productos al mejor
+          precio.
+        </p>
+      </div>
+    </div>
+    <hr class="my-4" />
+    <div class="text-center">
+      <p class="mb-0">
+        &copy; 2025 El Calabozo Del Androide. Todos los derechos reservados.
+      </p>
+    </div>
+  </div>
+</footer>

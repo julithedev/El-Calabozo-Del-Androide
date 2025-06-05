@@ -1,0 +1,101 @@
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" routerLink="/">
+      <i class="fas fa-shopping-bag me-2"></i>El Calabozo Del Androide
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNav"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link active" routerLink="/">Inicio</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/editar">Editar</a>
+        </li>
+      </ul>
+      <div class="d-flex">
+        <a routerLink="/carrito" class="btn btn-primary">
+          <i class="fas fa-shopping-cart mx-1"></i>
+          <span class="badge bg-light text-dark">{{
+            (cartService.cart$ | async)?.length || 0
+          }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container text-center">
+    <h1 class="display-4 fw-bold mb-3">Nuestros Productos</h1>
+    <p class="lead">Descubre la mejor tecnología al mejor precio</p>
+  </div>
+</section>
+
+<!-- Products Grid -->
+<div class="container my-5">
+  <div class="row g-4">
+    <div class="col-lg-3 col-md-4 col-sm-6" *ngFor="let producto of productos">
+      <div class="card product-card border-0 shadow-sm h-100">
+        <div
+          class="position-relative d-flex justify-content-center align-items-center overflow-hidden"
+          style="height: 250px"
+        >
+          <img
+            [src]="producto.imageUrl"
+            *ngIf="producto.imageUrl"
+            alt="{{ producto.producto }}"
+            class="card-img-top img-fluid product-image"
+          />
+        </div>
+        <div class="card-body d-flex flex-column">
+          <h6 class="card-title">{{ producto.producto }}</h6>
+          <p class="card-text text-muted small">{{ producto.descripcion }}</p>
+          <div
+            class="d-flex justify-content-between align-items-center mt-auto"
+          >
+            <span class="price">{{ producto.precio | currency:'' }}</span>
+          </div>
+          <button
+            (click)="onAddItem(producto)"
+            class="btn btn-primary w-100 mt-3"
+          >
+            <i class="fas fa-cart-plus me-2"></i>Agregar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-light py-5 mt-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h5 class="fw-bold mb-3">
+          <i class="fas fa-shopping-bag me-2"></i>El Calabozo Del Androide
+        </h5>
+        <p>
+          Tu tienda de tecnología de confianza. Los mejores productos al mejor
+          precio.
+        </p>
+      </div>
+    </div>
+    <hr class="my-4" />
+    <div class="text-center">
+      <p class="mb-0">
+        &copy; 2025 El Calabozo Del Androide. Todos los derechos reservados.
+      </p>
+    </div>
+  </div>
+</footer>
